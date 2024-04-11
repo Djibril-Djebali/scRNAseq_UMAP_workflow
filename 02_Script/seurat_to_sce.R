@@ -6,21 +6,24 @@ library(data.table)
 library(SingleCellExperiment)
 
 #-------------------------------------
-# Convertion
+# Data
 #-------------------------------------
 
 SODIR     <- snakemake@input[["input"]]
 OUTPUTDIR <- snakemake@output[["output"]]
 n         <- length(SODIR)
 
+#-------------------------------------
+# Convertion
+#-------------------------------------
 for(i in 1:n){
     so  <- readRDS(SODIR[i])
     sce <- convertSeuratToSCE(so)
 
     #-------------------------------------
-        #Output
+    #Output
     #-------------------------------------
 
-    saveRDS(so, file = file.path(OUTPUTDIR[i]))
+    saveRDS(sce, file = file.path(OUTPUTDIR[i]))
     }
 
