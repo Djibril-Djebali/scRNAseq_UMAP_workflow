@@ -42,12 +42,11 @@ rule normalisation:
 
 rule integration:
     input:
-        input  = expand("")
+        input  = expand("03_Output/Normalised/{data}_norm.rds", data=DATA)
     output:
-        output = expand("")
+        output = "test.txt"
     conda:
-        "01_Container/seurat_to_sce.yaml"
-        #"01_Container/preparation_sims.yaml"
+        "01_Container/integration.yaml"
     script:
-        "02_Script/seurat_to_sce.R"
+        "02_Script/integration.R"
 
