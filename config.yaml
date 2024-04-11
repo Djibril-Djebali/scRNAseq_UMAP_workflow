@@ -1,0 +1,282 @@
+#-------------------------------------
+# Path to sample sheet
+#-------------------------------------
+
+sample: sample.tsv
+
+#-------------------------------------
+# Config
+#-------------------------------------
+
+# If you run the workflow with slurm (sbatch run_slurm.sh) = true
+run_slurm: false
+# If you data are demultiplexed = true
+run_demultiplex: false
+# If your data are not demultiplexed = true
+run_multiplex: true
+
+rules:
+    # Optimizing and assembling genome annotations for 3’ single-cell RNA-sequencing analysis
+    reference_enhancer_rule: "FALSE"
+    # Build the reference with cellranger
+    ref_cellranger_rule: "FALSE"
+    # Run SIMS to anotate cells
+    sims_rule: "TRUE"
+
+run:
+    # FASTQ file naming convention : [Sample name]_S1_L00[Lane Number]_[Read Type]_001.fastq.gz
+    
+    # Can be a list if pair-end : "R1,R2" or "1,2" or "R1_001,R2_001"
+    types: "1,2"
+    # Library if multiplexed 
+    library: "1_A_GEX,2_A_CMO"
+
+fastq:
+    # pair-end or not (R1,R2 or 1,2 etc...)
+    pair: "R1,R2"
+    # Bioproject
+    biop: "SRP215051_SRP287614"
+    # Sequence Read Archive (SRA)
+    sra: "SRP287614"
+    # Sample name ; Multiple names may be supplied as a comma-separated list, in which case they will be treated as one sample.
+    sname: "72h,80h,86h,96h"
+    # Project name
+    nproject: "SRP215051_SRP287614"
+
+# Genome and gff link to create the pre-built Cell Ranger reference
+reference:
+    link_ref_fasta: "https://ftp.ensembl.org/pub/release-98/fasta/mus_musculus/dna/Mus_musculus.GRCm38.dna.primary_assembly.fa.gz"
+    ref_fasta: "Mus_musculus.GRCm38.dna.primary_assembly.fa"
+    link_ref_gtf: "https://storage.googleapis.com/generecovery/mouse_mm10_optimized_annotation_v2.gtf.gz"
+    ref_gtf: "Mus_musculus.GRCm39.109.gtf"
+    # Name for the file of the cellranger reference
+    ref_cellranger: "refdata-cellranger-mm10"
+    # Optional reference version string to include with
+    ref_version: "1.0.0"
+
+    # link_ref_fasta: "https://ftp.ensembl.org/pub/release-98/fasta/mus_musculus/dna/Mus_musculus.GRCm38.dna.primary_assembly.fa.gz"
+    # link_ref_gtf: "https://storage.googleapis.com/generecovery/mouse_mm10_optimized_annotation_v2.gtf.gz"
+    # ref_cellranger: "refdata-cellranger-mm10"
+    #ref_fasta: "Mus_musculus.GRCm38.dna.primary_assembly.fa"
+
+# Parameter for cellranger multi
+multi:
+    # A unique run ID string: e.g. sample345 that is also the output folder name. Cannot be more than 64 characters.
+    id: "S004647_to_S004650"
+    # Path to config CSV file with input libraries and analysis parameters.
+    config: "multi_config.csv"
+
+# parameter for cellranger count
+cellranger:
+    # Path of the fastq_path folder. Can take multiple comma-separated paths, which is helpful if the same library was sequenced on multiple flowcells. 
+    fastqs: "00_RawData"
+    # Expected number of recovered cells. Default: 3,000 cells.
+    expect_cells: 5000
+    # Restricts cellranger to use specified number of cores to execute pipeline stages
+    localcores: 6
+    # Restricts cellranger to use specified amount of memory (in GB) to execute pipeline stages.
+    localmem: 50
+    # Sample to be aggregated by cell ranger
+    sagrr: "M12,M15,M27,Normal_Melanocytes,Mix_MM_lines"
+    # Aggregating libraries with different chemistry versions. Need to be in the same order than sagrr.
+    batch: "v3_lib,v3_lib,v3_lib,v3_lib,v3_lib"
+    # Assign categories to individual samples. Need to be in the same order than sagrr.
+    categorie: "melanoma,melanoma,melanoma,normal,melanoma"
+    # Depth normalization for aggregate ("none" or "mapped"). The none option may be appropriate if you want to maximize sensitivity and plan to deal with depth normalization in a downstream step.
+    normagrr: "none"
+    demuxlet:
+    # Tell if multiple samples are pooled by barcoded single cell sequencing and need deconvolute sample identity and identify multiplets.
+    spooled: "TRUE"
+
+# Seurat parameters
+seurat:
+    ##### General
+    # Number of cells above which use ggplot instead of interactive plotly
+    plot_raster_nbcells_threshold : 10000
+    # CellRanger count path for each sample for Read10X
+    cell_ranger_count_path: "/count/sample_filtered_feature_bc_matrix/"
+
+    ##### Filtering 
+    # Switch from QC exploration mode and QC filtering
+    # In exploration mode, the cells that would be filtered by QC threshold are not filtered but marked
+    # They are shown in the later analysis with a different color
+    # "TRUE" : Exploration mode, "FALSE" : Not in exploration mode
+    qc_exploration_mode: "FALSE"
+    # Include features detected in at least this many cells. Will subset the counts matrix as well.
+    min_cells: 3
+    # Include cells where at least this many features are detected.
+    min_features: 200
+    # Cells with number of UMIs outside the range will be excluded
+    # Can be a list of UMIs but MUST be on the same order than sample.tsv id.
+    filter_umi_min: "0,0,0,0"
+    filter_umi_max: "55000,42000,42000,40000"
+    # Filter cells that have unique feature counts over/less n
+    # Can be a list of feature counts but MUST be on the same order than sample.tsv id.
+    filter_feature_min: "1700,1700,1400,1400"
+    filter_feature_max: "7900,7500,7700,7200"
+    # Filter cells that have > n% mitochondrial counts
+    filter_percent_mt: "10,10,8,8"
+    # Filter cells that have < n% mitochondrial counts
+    filter_percent_mt_min: "0.2,0.2,0.2,0.2"
+    # Filter cells that have < n% ribosomal counts
+    filter_percent_rb: "0,0,0,0"
+    # Pattern to match features against => mitochondrial genes | for mouse : "^mt-" / for human : "^MT-"
+    pattern_mt: "^mt-"
+    # Pattern to match features against => ribosomal genes
+    pattern_rb: "^rps|^rpl"
+
+    ##### Normalization
+    # Normalization parameters (see Seurat::NormalizeData())
+    norm_method: "LogNormalize"
+    norm_scale_factor: 10000
+
+    ##### Find the most variable genes
+    # How to choose top variable features => vst, mean.var.plot or dispersion
+    feature_select_method: "vst"
+    # Number of features to select as top variable features; only used when select_method is set to 'dispersion' or 'vst'
+    variable_features: 2000
+    # For table in report
+    variable_features_showtop : 200
+
+    ##### PCA parameters
+    # Number of dimention to show for the vizualisation
+    dims: 30
+    # Default number of dimensions to use for PCA (see Seurat::RunPCA())
+    pca_npc: 22
+    # Number of dimensions to show in PCA-related plots
+    pca_plots_nbdims : 3
+    #  Number of'top' features to show when plotting PCA loadings
+    pca_plot_nbfeatures : 3
+
+    ##### Dimensionality reduction parameters (TSNE/UMAP)
+    # Number of dimensions to use from PCA results
+    dimreduc_use_pca_nbdims : 22
+
+    ##### Cluster identification parameters
+    # Number of dimensions to use from PCA results
+    findclusters_use_pca_nbdims : 22
+    # Nearest-neighbor graph construction
+    findneighbors_k : 30
+    # Value of the resolution parameter, use a value above (below) 1.0 if you want to obtain a larger (smaller) number of communities.
+    findclusters_resolution : 1
+    # Algorithm for modularity optimization
+    # 1 = Louvain; 2 = Louvain with multilevel refinement; 3 = SLM; 4 = Leiden
+    findclusters_algorithm : 1
+
+rm_doublets:
+    # If you want to use the scran normalisation : scran or "" if seurat
+    normalisation : "scran"
+
+# Parameters to build correct reference(s) for sims
+reference_sims:
+    ##### General #####
+    #  Path of the script you want to execute (Corespond to the reference you want to use)
+    # For now : arlotta.R, allen_mouse_whole_cortex.R, mousegastrulation.R
+    r_script: "mousegastrulation.R"
+    # Metadata of the reference matrix
+    output_name_ref_metadata: "metadata"
+    # Reference matrix
+    output_name_ref_matrix: "mousegastrulation"
+    # Reference matrix with metadata
+    output_name_ref_matrix_metadata: "mousegastrulation_join_metadata"
+
+    output_name_matrix: "data_matrix"
+    # Name of the column that contain the cells
+    # allen mouse whole cortex : "sample_name", arlotta : "NEW_NAME"
+    cells_column: "Cell"
+
+    ##### Our Matrix to annotate #####
+    # The name of the folder of the sample you want to annotate (Folder in the Seurat folder)
+    sample_id: "mousegastrulation"
+
+    ##### Paola Arlotta #####
+    # Path for the arlotta metadata
+    arlotta_metadata: "arlotta/metaData_scDevSC.txt"
+    #
+    arlotta_matrix: "arlotta/gene_sorted-matrix.mtx.gz"
+    #
+    arlotta_cells: "arlotta/barcodes.tsv"
+    #
+    arlotta_features: "arlotta/genes.tsv"
+    # Pattern that correspond to the mouse age that we want to keep for the training of our data
+    # It's possible to select multiple ones if separate by a coma
+    # In this reference : E10, E11, E12, E13, E14, E15, E16, E17, E18, P1, P4
+    pattern_to_keep: "P4"
+
+    ##### Allen_mouse_whole_cortex #####
+    #
+    allen_metadata: "allen/"
+    #
+    allen_matrix: "allen/"
+    #
+    allen_genes: "allen/"
+    #
+    allen_cells: "allen/"
+
+    ##### mousegastrulation #####
+    # Samples from the reference as described in EmbryoAtlasData object (for Lenne project : c(1:20,23:37)
+    #mousegastrulation_samples: "1,2,3,4,5,6,7,8,9,10,12,13,14,15,16,17,18,19,20,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37"
+    mousegastrulation_samples: "1,5"
+    # File to save the atlas reference matrice in h5ad (col: genes (in exactly the same order than the data to annotate) ; raw = cells (need to be exactly the same than the metadata)) + celllabels
+    mousegastrulation_matrix: "mousegastrulation.h5ad"
+    # File to save the data to annotate in h5ad (col: genes (in exactly the same order than the reference)
+    data_matrix: "data_matrix.h5ad"
+
+sims:
+    ##### General
+    # Name of the column in your metadata on which you wish to train your model.
+    # Allen mouse whole cortex : "subclass_label", arlotta : "New_cellType"
+    class_label: "CellType"
+    # Your personnal key to connect to your wandb account
+    key: "536dbe5b6a398ef77292f0db3e39d55089c56583"
+    # Number of cores (Put the same in the run_slurm.sh if necessary)
+    num_workers: 24
+    # Maximum number of epoch to train our model (Will stop after, start counting from 0)
+    max_epoch: 500
+
+    ##### Logger
+    # Name of the project (Will be the name of the run and checkpoint)
+    project_name: "mouse_gastrulation_atlas"
+
+    ##### Early Stopping
+    # The validation metric you wish to monitor for early stop.
+    monitor: "val_loss"
+    # The number of epochs during which the validation metric (monitor) may not improve before early shutdown is triggered. (To prevent overtraining)
+    patience: 20
+
+    # Epoch file from wandb to chosse for the cell assignation
+    epoch: epoch=39-step=87120.ckpt
+
+    ##### Cells annotation
+    # Threshold of the difference between the first and second score of the prediction to say if a cell is unknown or not
+    threshold: 0.9
+    # Seurat object with sims cell_assignation
+    rds_assignation: filtered_assigned_seurat_object.rds
+    # Matrix with cell predtion after filtration with the threshold
+    pred_filtered: data_matrix_prediction_filtered.csv
+    # pdf for the confusion matrix
+    confusion_matrix: confusion_matrix.pdf
+    
+# Differentially expressed features analyses
+diffexp:
+    # Features of interest
+    features: "SOX10,SOX9,RIPOR2,MITF,DCT,MYC,FLT1,TNFRSF11B,XIRP2,ST3GAL1"
+    # Cells of interest to find differentially expressed features against "Normal" or Wild Type cells
+    cell_marker: "M12,M15,M27,MM029,A375,MM031,MM057,MM099,MM087,MM001,MM074,MM011,MM047"
+    # Test to find differentially expressed genes. Can be wilcox, bimod, roc, t, negbinom, poisson, LR, MAST, DESeq2.
+    test: "wilcox"
+    # Threshold to detect the under or over expressed genes
+    threshold: 0.0
+    # qvalue threshold
+    pCutoff: 0.01
+    # Foldchange threshold (not in log base 2)
+    FCcutoff: 2
+
+# Differentially expressed features analyses inside cluster after subset (by gene expression)
+diffexpsubset:
+    # Marker of interest to select cluster of Cells with expression or not of this gene. This gene will be removed for the DE analyses due to is high DE value.
+    marker_gene: "RIPOR2"
+    # If no gene indicated this filter is not performed.
+    genetoremove: ""
+    # Cluster on the seurat object (choose cluster with high number of the marker gene of interest)
+    cluster: "Normal_Melanocytes,M15,M27,A375,MM057,MM087,MM001,MM074"
