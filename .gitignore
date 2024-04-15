@@ -1,5 +1,7 @@
 /.snakemake
-/00_Seurat_object
-/03_Output
+/00_Bin
+/04_Output
 /brouillon.txt
 /dag.svg
+/03_Input
+/05_Figure

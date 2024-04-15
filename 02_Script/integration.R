@@ -2,7 +2,7 @@
 # Library
 #-------------------------------------
 
-library(singleCellTK)
+library(Seurat)
 
 #-------------------------------------
 # Integration

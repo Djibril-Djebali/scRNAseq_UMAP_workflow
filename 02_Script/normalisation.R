@@ -13,6 +13,7 @@ library(scuttle)
 library(scater)
 library(Matrix)
 library(irlba)
+library(Seurat)
 library(zellkonverter)
 library(singleCellTK)
 
@@ -28,29 +29,34 @@ n         <- length(SCEDIR)
 # Normalisation
 #-------------------------------------
 
-for(i in 1:n){
-  sce <- readRDS(SCEDIR[i])
+for(i in 1:n)
+{
+  so <- readRDS(file.path(SCEDIR[i]))
 
-  ## STEP from https://rstudio-pubs-static.s3.amazonaws.com/699579_c6be4bf3220746088bdfd12a61aa15c4.html
-  # and https://github.com/MarioniLab/EmbryoTimecourse2018/blob/master/analysis_scripts/atlas/4_normalisation/normalise.Rmd
-  # For pre-clustering, we use scran's `quickCluster` function, using the `igraph` method. We specify a maximum cluster size of 3000 cells and a minimum cluster size of 100 cells. # nolint: line_length_linter.
-  clusts <- as.numeric(quickCluster(sce,
-                          method = "igraph",
-                          use.ranks = FALSE, # suggested by the authors
-                          min.size = 100)) # require at least 100 cells per cluster
-  # Number of cells in each cluster should be at least twice that of the largest 'sizes'
-  min.clust = min(table(clusts))/2
+  # convert to SingleCellExperiment
+  sce_dataset <- as.SingleCellExperiment(so)
+
+  clusts_sce_dataset <- scran::quickCluster(sce_dataset,
+                                            method = "igraph",
+                                            use.ranks = FALSE, # suggested by the authors
+                                            min.size = 100) # require at least 100 cells per cluster
+
+  min.clust = min(table(clusts_sce_dataset))/2
   new_sizes = c(floor(min.clust/3), floor(min.clust/2), floor(min.clust))
-  sce = computeSumFactors(sce, clusters = clusts, sizes = new_sizes, max.cluster.size = 3000)
+  sce_dataset = computeSumFactors(sce_dataset, clusters = clusts_sce_dataset, sizes = new_sizes, max.cluster.size = 3000)
+    
+  sce_dataset <- logNormCounts(sce_dataset, size.factors = sizeFactors(sce_dataset))
 
-  ## Use scuttle to normalize function, which calculates log2-transformed normalized expression values.
-  # This is done by dividing each count by its size factor, adding a pseudo-count and log-transforming.
-  sce <- logNormCounts(sce)
+  so[["RNA"]] <- SetAssayData(so[["RNA"]],
+                              layer = "data", 
+                              new.data = logcounts(sce_dataset))
+
+  so$sizeFactors <- sizeFactors(sce_dataset)
+
+  UpdateSeuratObject(so)
 
   #-------------------------------------
   # Output
   #-------------------------------------
-  
-  so <-convertSCEToSeurat(sce)
   saveRDS(so, file = file.path(OUTPUTDIR[i]))
   }

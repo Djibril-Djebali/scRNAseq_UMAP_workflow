@@ -4,6 +4,7 @@
 library(singleCellTK)
 library(data.table)
 library(SingleCellExperiment)
+library(scuttle)
 
 #-------------------------------------
 # Data
@@ -16,14 +17,17 @@ n         <- length(SODIR)
 #-------------------------------------
 # Convertion
 #-------------------------------------
-for(i in 1:n){
-    so  <- readRDS(SODIR[i])
-    sce <- convertSeuratToSCE(so)
 
-    #-------------------------------------
-    #Output
-    #-------------------------------------
+sce <- readRDS(SODIR)
 
-    saveRDS(sce, file = file.path(OUTPUTDIR[i]))
-    }
+## give the adequate format for the normalisation
+#but no idea if it will cause cause an issue in next step?
+sce <- logNormCounts(sce) 
 
+so  <- convertSCEToSeurat(sce)
+
+#-------------------------------------
+#Output
+#-------------------------------------
+
+saveRDS(so, file = file.path(OUTPUTDIR))
