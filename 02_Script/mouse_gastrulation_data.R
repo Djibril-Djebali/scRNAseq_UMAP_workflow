@@ -23,6 +23,8 @@ library(singleCellTK)
 # Data
 #-------------------------------------
 
+SCEDIR    <- snakemake@output[["output"]]
+
 ##  Loading the samples from the atlas 
 MOUSEGASTRULATION_SAMPLES <- snakemake@params[["mousegastrulation_samples"]]
 MOUSEGASTRULATION_SAMPLES <- type.convert(MOUSEGASTRULATION_SAMPLES, dec=".", as.is = TRUE)
@@ -38,4 +40,4 @@ sce <- sce[,!is.na(colData(sce)$celltype)]
 # Output
 #-------------------------------------
 
-saveRDS(sce, file = file.path( "03_Output/Data/mouse_gastrulation_data.rds"))
+saveRDS(sce, file = file.path(SCEDIR))

@@ -11,7 +11,7 @@ rule all:
 
 rule data_atlas:
     output:
-        "03_Input/Atlas/mouse_gastrulation_data.rds"
+        output = "03_Input/Atlas/mouse_gastrulation_data.rds"
     params:
         mousegastrulation_samples = config["reference_sims"]["mousegastrulation_samples"].split(','),
     conda:
@@ -31,7 +31,7 @@ rule sce_to_seurat:
 
 rule normalisation:
     input:
-        input = expand("03_Input/{data}_filtered_seurat_object.rds", data=DATA)       
+        input  = expand("03_Input/{data}_filtered_seurat_object.rds", data=DATA)       
     output:
         output = expand("04_Output/Normalised/{data}_norm.rds", data=DATA)
     conda:
@@ -50,12 +50,3 @@ rule integration:
     script:
         "02_Script/integration.R"
 
-#rule seurat_to_sce:
-#    input:
-#        input  = expand("00_Seurat_object/{time}_filtered_seurat_object.rds",time=TIME)
-#    output:
-#        #output = expand("03_Output/Data/{time}_data.rds", time=TIME)
-#    conda:
-#        "01_Container/seurat_to_sce.yaml"
-#    script:
-#        "02_Script/seurat_to_sce.R"
