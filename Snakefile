@@ -7,7 +7,8 @@ DATA = ["mouse_gastrulation"] + TIME
 
 rule all:
     input:
-        expand("04_Output/Normalised/{data}_norm.rds", data=DATA)
+        "05_Figure/UMAP.pdf"
+    
 
 rule data_atlas:
     output:
@@ -23,7 +24,7 @@ rule sce_to_seurat:
     input:
         input  = "03_Input/Atlas/mouse_gastrulation_data.rds"
     output:
-        output = "03_Input/mouse_gastrulation_filtered_seurat_object.rds"
+        output = "03_Input/Atlas/Convert/Seurat/Convert_atlas.rds_Seurat.RDS"
     conda:
         "01_Container/preparation_sims.yaml"
     script:
@@ -31,9 +32,9 @@ rule sce_to_seurat:
 
 rule normalisation:
     input:
-        input  = expand("03_Input/{data}_filtered_seurat_object.rds", data=DATA)       
+        input  = "03_Input/{data}_filtered_assigned_seurat_object.rds"    
     output:
-        output = expand("04_Output/Normalised/{data}_norm.rds", data=DATA)
+        output = "04_Output/Normalised/{data}_norm.rds"
     conda:
         "01_Container/preparation_sims.yaml"
     script:
@@ -44,9 +45,29 @@ rule integration:
     input:
         input  = expand("04_Output/Normalised/{data}_norm.rds", data=DATA)
     output:
-        output = "test.txt"
+        output = "04_Output/Integrated/integrated.rds"
     conda:
         "01_Container/integration.yaml"
     script:
         "02_Script/integration.R"
 
+rule new_file_path:
+    input:
+        "03_Input/Atlas/Convert/Seurat/Convert_atlas.rds_Seurat.RDS"
+    output:
+        "03_Input/mouse_gastrulation_filtered_assigned_seurat_object.rds"
+    shell:
+       """
+       cp {input} duplicate.txt
+       mv duplicate.txt {output}
+       """
+
+rule visualisation:
+    input:
+        input  = "04_Output/Integrated/integrated.rds"
+    output:
+        output = "05_Figure/UMAP.pdf"
+    conda:
+        "01_Container/integration.yaml"
+    script:
+        "02_Script/visualisation.R"

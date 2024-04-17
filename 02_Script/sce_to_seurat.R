@@ -1,6 +1,8 @@
 #-------------------------------------
 # Library
 #-------------------------------------
+
+library(Seurat)
 library(singleCellTK)
 library(data.table)
 library(SingleCellExperiment)
@@ -24,10 +26,14 @@ sce <- readRDS(SODIR)
 #but no idea if it will cause cause an issue in next step?
 sce <- logNormCounts(sce) 
 
-so  <- convertSCEToSeurat(sce)
-
 #-------------------------------------
 #Output
 #-------------------------------------
 
-saveRDS(so, file = file.path(OUTPUTDIR))
+exportSCE(sce,
+          samplename = "Convert",
+          directory  = "03_Input/Atlas",
+          type       = "atlas",
+          format     = c("Seurat")
+          )
+
