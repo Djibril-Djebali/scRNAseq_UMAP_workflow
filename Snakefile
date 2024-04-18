@@ -32,9 +32,9 @@ rule sce_to_seurat:
 
 rule normalisation:
     input:
-        input  = "03_Input/{data}_filtered_assigned_seurat_object.rds"    
+        input  = expand("03_Input/{data}_filtered_assigned_seurat_object.rds", data = DATA)    
     output:
-        output = "04_Output/Normalised/{data}_norm.rds"
+        output = expand("04_Output/Normalised/{data}_norm.rds" , data = DATA)
     conda:
         "01_Container/preparation_sims.yaml"
     script:

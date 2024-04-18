@@ -15,9 +15,8 @@ OUTPUTDIR <- snakemake@output[["output"]]
 integrated <- readRDS(INPUTDIR)
 
 p1 <- DimPlot(integrated, reduction = "umap", group.by = "orig.ident")
-p2 <- DimPlot(integrated, reduction = "umap", group.by = "celltype", label = TRUE, repel = TRUE) +
-      NoLegend()
+p2 <- DimPlot(integrated, reduction = "umap", group.by = "celltype", label = TRUE, repel = TRUE)
 
-pdf(OUTPUTDIR, height = 10, width = 20)
+pdf(OUTPUTDIR, height = 15, width = 30)
 p1 + p2
 dev.off()

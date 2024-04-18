@@ -32,6 +32,10 @@ for(i in 1:n)
                                        verbose = FALSE
                                        )
     }
+#Rename "seuratproject" into "mouse gastrulation" 
+so <- so_list[[1]]
+so@meta.data$orig.ident <- "Mouse gastrulation"
+so_list[[1]] <- so
 
 #Rename "celltype" instead of labels the metadata of celltype
 for(i in 2:n)
