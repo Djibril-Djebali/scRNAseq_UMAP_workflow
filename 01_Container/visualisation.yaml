@@ -5,6 +5,7 @@ channels :
     - defaults
 dependencies :
     - r-base = 4.3.2
-    - r-seuratobject = 4.1.4
+    - r-ggplot2 = 3.5.0
+    - r-ggnewscale = 0.4.10
     - r-seurat = 4.4.0
     - r-htmltools = 0.5.7

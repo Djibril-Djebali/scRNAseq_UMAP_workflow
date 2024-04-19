@@ -3,6 +3,7 @@
 
 configfile:"config.yaml"
 TIME = ["72h", "80h", "86h", "96h"]
+#TIME = config["fastq"]["sname"].split(",")
 DATA = ["mouse_gastrulation"] + TIME
 
 rule all:
@@ -68,6 +69,6 @@ rule visualisation:
     output:
         output = "05_Figure/UMAP.pdf"
     conda:
-        "01_Container/integration.yaml"
+        "01_Container/visualisation.yaml"
     script:
-        "02_Script/visualisation.R"
+        "02_Script/visualisation_UMAP.R"

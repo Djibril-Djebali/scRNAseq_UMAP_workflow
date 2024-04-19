@@ -3,7 +3,6 @@
 #-------------------------------------
 
 library(Seurat)
-library(ggplot2)
 library(cowplot)
 library(patchwork)
 
@@ -34,7 +33,7 @@ for(i in 1:n)
     }
 #Rename "seuratproject" into "mouse gastrulation" 
 so <- so_list[[1]]
-so@meta.data$orig.ident <- "Mouse gastrulation"
+so@meta.data$orig.ident <- "mouse gastrulation"
 so_list[[1]] <- so
 
 #Rename "celltype" instead of labels the metadata of celltype
@@ -44,12 +43,14 @@ for(i in 2:n)
     colnames(so@meta.data)[colnames(so@meta.data) == "labels"] <- "celltype"
     so_list[[i]] <- so
     }
+so <- NA
 
 #Identifying anchors,
 ANCHORSET <- FindIntegrationAnchors(object.list = so_list[1:n], dims = 1:30)
 
 #Data integration
 integrated <- IntegrateData(anchorset = ANCHORSET, dims = 1:30)
+ANCHORSET  <- NA
 
 # switch to integrated assay. The variable features of this assay are automatically set during
 # IntegrateData
