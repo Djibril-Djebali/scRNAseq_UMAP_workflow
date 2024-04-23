@@ -28,6 +28,8 @@ SCEDIR    <- snakemake@output[["output"]]
 ##  Loading the samples from the atlas 
 MOUSEGASTRULATION_SAMPLES <- snakemake@params[["mousegastrulation_samples"]]
 MOUSEGASTRULATION_SAMPLES <- type.convert(MOUSEGASTRULATION_SAMPLES, dec=".", as.is = TRUE)
+
+# Loading all the samples in a sce object
 sce <- EmbryoAtlasData(samples = c(MOUSEGASTRULATION_SAMPLES))
 
 # Change ENSEMBL name of the count matrix by corresponding gene name 

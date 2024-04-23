@@ -8,3 +8,4 @@ dependencies :
     - r-seuratobject = 4.1.4
     - r-seurat = 4.4.0
     - r-htmltools = 0.5.7
+    - r-matrix = 1.6-5
