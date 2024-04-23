@@ -8,7 +8,10 @@ DATA = config["reference_sims"]["ref_name"].split(",") + TIME
 rule all:
     input:
         "05_Figure/All_celltypes/UMAP_all_celltypes.pdf",
-        "05_Figure/Single_celltypes/UMAP_single_celltypes.pdf"
+        "05_Figure/Single_celltypes/UMAP_gastruloid_single_celltypes.pdf",
+        "05_Figure/Atlas_sample/UMAP_atlas_sample.pdf",
+        "05_Figure/Time_simple/UMAP_time_sample.pdf",
+        "05_Figure/Single_celltypes/UMAP_mouse_single_celltypes.pdf"
     
 rule data_atlas:
     output:
@@ -67,8 +70,10 @@ rule visualisation:
         input  = "04_Output/Integrated/integrated.rds"
     output:
         output1 = "05_Figure/All_celltypes/UMAP_all_celltypes.pdf",
-        output2 = "05_Figure/Single_celltypes/UMAP_single_celltypes.pdf",
-        output3 = "05_Figure/Atlas_sample/UMAP_atlas_sample.pdf"
+        output2 = "05_Figure/Single_celltypes/UMAP_gastruloid_single_celltypes.pdf",
+        output3 = "05_Figure/Atlas_sample/UMAP_atlas_sample.pdf",
+        output4 = "05_Figure/Time_simple/UMAP_time_sample.pdf",
+        output5 = "05_Figure/Single_celltypes/UMAP_mouse_single_celltypes.pdf"
     params:
         params = DATA
     conda:

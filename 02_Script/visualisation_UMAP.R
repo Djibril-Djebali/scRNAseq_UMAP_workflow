@@ -15,6 +15,8 @@ INPUTDIR   <- snakemake@input[["input"]]
 OUTPUTDIR1 <- snakemake@output[["output1"]]
 OUTPUTDIR2 <- snakemake@output[["output2"]]
 OUTPUTDIR3 <- snakemake@output[["output3"]]
+OUTPUTDIR4 <- snakemake@output[["output4"]]
+OUTPUTDIR5 <- snakemake@output[["output5"]]
 SAMPLEID   <- snakemake@params[["params"]]
 integrated <- readRDS(INPUTDIR)
 
@@ -74,13 +76,9 @@ p1 + p2
 dev.off()
 
 #===============================================================================
-# Visualisation of all cell types
+# Visualisation of all cell types individually
 #===============================================================================
-
-all_celltypes <- unique(data_allh$celltype)
-n             <- length(all_celltypes)
-
-plot.scType.UMAP <- function(cell_type)
+plot.scType.UMAP <- function(x, cell_type)
 {
   ggplot() +
     geom_point(data = data, #all data
@@ -92,7 +90,7 @@ plot.scType.UMAP <- function(cell_type)
     scale_color_manual(values = c("A" = "grey")) +
     guides(color = "none") +
     new_scale_color() +
-    geom_point(data = data_allh,
+    geom_point(data = x,
                aes(x     = UMAP_1, 
                    y     = UMAP_2,
                    color = celltype == cell_type,
@@ -105,10 +103,14 @@ plot.scType.UMAP <- function(cell_type)
     theme(title = element_text(size = 30))
 }
 
+# Gastruloide celsl types
+all_celltypes <- unique(data_allh$celltype)
+n             <- length(all_celltypes)
+
 plots_list <- list()
 for(i in 1:n)
 {
-  p               <- plot.scType.UMAP(all_celltypes[i])
+  p               <- plot.scType.UMAP(data_allh, all_celltypes[i])
   plots_list[[i]] <- p
 }
 
@@ -116,14 +118,29 @@ pdf(OUTPUTDIR2, height = 15*(ceiling(n/2)), width = 30)
 plot_grid(plotlist = plots_list, ncol = 2)
 dev.off()
 
+# Embryonic cells types
+all_celltypes <- unique(data_ref$celltype)
+n             <- length(all_celltypes)
+
+plots_list <- list()
+for(i in 1:n)
+{
+  p               <- plot.scType.UMAP(data_ref, all_celltypes[i])
+  plots_list[[i]] <- p
+}
+
+pdf(OUTPUTDIR5, height = 15*(ceiling(n/2)), width = 30)
+plot_grid(plotlist = plots_list, ncol = 2)
+dev.off()
+
 #===============================================================================
 # Visualisation of sample
 #===============================================================================
 
-all_samples <- unique(data_allh$sample)
+all_samples <- unique(data_ref$sample)
 n           <- length(all_samples)
 
-plot.sample.UMAP <- function(cell_type)
+plot.sample.UMAP <- function(samples)
 {
   ggplot() +
     geom_point(data = data, #all data
@@ -138,12 +155,12 @@ plot.sample.UMAP <- function(cell_type)
     geom_point(data = data_ref,
                aes(x     = UMAP_1, 
                    y     = UMAP_2,
-                   color = sample == sample,
+                   color = sample == samples,
                )
     ) +
     scale_color_manual(values = c(alpha("grey",0), "red")) +
     guides(color = "none") +
-    labs(title = element_text(cell_type)) +
+    labs(title = element_text(samples)) +
     theme_void() +
     theme(title = element_text(size = 30))
 }
@@ -151,10 +168,52 @@ plot.sample.UMAP <- function(cell_type)
 plots_list <- list()
 for(i in 1:n)
 {
-  p               <- plot.sample.UMAP(all_celltypes[i])
+  p               <- plot.sample.UMAP(all_samples[i])
   plots_list[[i]] <- p
 }
 
 pdf(OUTPUTDIR3, height = 15*(ceiling(n/2)), width = 30)
+plot_grid(plotlist = plots_list, ncol = 2)
+dev.off()
+
+#===============================================================================
+# Visualisation of each our of the experimentall data
+#===============================================================================
+
+all_origins <- unique(data_allh$origin)
+n           <- length(all_origins)
+plot.origin.UMAP <- function(origins)
+{
+  ggplot() +
+    geom_point(data = data, #all data
+               aes(x    = UMAP_1, 
+                   y    = UMAP_2,
+                   color = "A",
+               )
+    ) +
+    scale_color_manual(values = c("A" = "grey")) +
+    guides(color = "none") +
+    new_scale_color() +
+    geom_point(data = data_allh,
+               aes(x     = UMAP_1, 
+                   y     = UMAP_2,
+                   color = origin == origins,
+               )
+    ) +
+    scale_color_manual(values = c(alpha("grey",0), "red")) +
+    guides(color = "none") +
+    labs(title = element_text(origins)) +
+    theme_void() +
+    theme(title = element_text(size = 30))
+}
+
+plots_list <- list()
+for(i in 1:n)
+{
+  p               <- plot.origin.UMAP(all_origins[i])
+  plots_list[[i]] <- p
+}
+
+pdf(OUTPUTDIR4, height = 15*(ceiling(n/2)), width = 30)
 plot_grid(plotlist = plots_list, ncol = 2)
 dev.off()
