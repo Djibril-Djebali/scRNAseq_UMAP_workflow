@@ -1,22 +1,26 @@
 # Single-Cell RNA-seq Analysis Workflow for 10x GENOMICS data : data visualisation in an UMAP
 ## Author
 
-Thomas Vannier (@metavannier), https://centuri-livingsystems.org/t-vannier/
 Djibril Djebali (@Djibril-Djebali)
+
+Thomas Vannier (@metavannier), https://centuri-livingsystems.org/t-vannier/
 
 ## About
 
-This workflow performs a Snakemake pipeline to process 10x single-cell RNAseq data from RDS files to the visualisation of cell type in UMPAs compared to a reference atlas from the MouseGastrulationData R package.
-Correction for differences between datasets is done by a step of normalisation with Scran then the dataset is integrated with Seurat v4 following the tutorial "Mapping and annotating query datasets : Integration of 3 pancreatic islet cell datasets", next is performed a dimensionality reduction to create UMAPs with the package R ggplot2. 
+This workflow performs a Snakemake pipeline to process 10x single-cell RNAseq data from RDS files to the visualisation of cell type in UMAPs compared to a reference atlas from the MouseGastrulationData R package. Correction for differences between datasets is done by a step of normalisation with Scran then the dataset is integrated with Seurat v4 following the tutorial "Mapping and annotating query datasets : Integration of 3 pancreatic islet cell datasets", next is performed a dimensionality reduction to create UMAPs with the package R ggplot2. 
 
 Steps for the analysis:
 Reference data extraction : 
-Use of the MouseGastrulationData R package and the following documentation https://www.bioconductor.org/packages/release/data/experiment/vignettes/MouseGastrulationData/inst/doc/MouseGastrulationData.htmlto to extract the data of the following article [(doi:10.1016/j.stem.2023.04.018)](https://doi.org/10.1016/j.stem.2023.04.018).
+Use of the MouseGastrulationData R package and the following documentation https://www.bioconductor.org/packages/release/data/experiment/vignettes/MouseGastrulationData/inst/doc/MouseGastrulationData.htmlto to extract 
+the data of the following article [(doi:10.1016/j.stem.2023.04.018)](https://doi.org/10.1016/j.stem.2023.04.018).
+
 Normalisation : 
 Using the process from Pijuan-Sala et al. 2019 
 [(doi:10.1038/s41586-019-0933-9)](https://doi.org/10.1038/s41586-019-0933-9) method with the Scran R package
+
 Integration :
 Using the method of integration of Seurat v4 https://satijalab.org/seurat/archive/v4.3/integration_mapping and then doing a dimensionality reduction following the same tutorial
+
 Visualisation :
 The visualisation of data was based from the figure of this article https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(23)00170-4?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS1934590923001704%3Fshowall%3Dtrue
 
