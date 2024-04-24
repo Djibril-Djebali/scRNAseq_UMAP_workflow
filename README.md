@@ -40,7 +40,7 @@ We would be pleased if you use this workflow and participate in its improvement.
 ### Step 2: Configure workflow
 
 Configure the workflow according to your needs via editing the files and repositories:
-- 03_Input need the `"{data}_filtered_assigned_seurat_object.rds"` with {data} the name of your sample, that you will also specify in config.yaml.
+- 03_Input need the `"{data}_filtered_assigned_seurat_object.rds"` with {data} the name of your sample, that you will also be specify in config.yaml.
 - [config.yaml](/config.yaml) indicating the parameters to use.
 - Comment the [Snakefile](/Snakefile) on the input line not expected for the pipeline.
 - Build the singularity image of mambaforge:23.1.0-1
