@@ -10,6 +10,7 @@ Thomas Vannier (@metavannier), https://centuri-livingsystems.org/t-vannier/
 This workflow performs a Snakemake pipeline to process 10x single-cell RNAseq data from RDS files to the visualisation of cell type in UMAPs compared to a reference atlas from the MouseGastrulationData R package. Correction for differences between datasets is done by a step of normalisation with Scran then the dataset is integrated with Seurat v4 following the tutorial "Mapping and annotating query datasets : Integration of 3 pancreatic islet cell datasets", next is performed a dimensionality reduction to create UMAPs with the package R ggplot2. 
 
 Steps for the analysis:
+
 Reference data extraction : 
 Use of the MouseGastrulationData R package and the following documentation https://www.bioconductor.org/packages/release/data/experiment/vignettes/MouseGastrulationData/inst/doc/MouseGastrulationData.htmlto to extract 
 the data of the following article [(doi:10.1016/j.stem.2023.04.018)](https://doi.org/10.1016/j.stem.2023.04.018).
