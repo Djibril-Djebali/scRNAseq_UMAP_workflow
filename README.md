@@ -11,18 +11,18 @@ This workflow performs a Snakemake pipeline to process 10x single-cell RNAseq da
 
 Steps for the analysis:
 
-Reference data extraction : 
+-Reference data extraction : 
 Use of the MouseGastrulationData R package and the following documentation https://www.bioconductor.org/packages/release/data/experiment/vignettes/MouseGastrulationData/inst/doc/MouseGastrulationData.htmlto to extract 
 the data of the following article [(doi:10.1016/j.stem.2023.04.018)](https://doi.org/10.1016/j.stem.2023.04.018).
 
-Normalisation : 
+-Normalisation : 
 Using the process from Pijuan-Sala et al. 2019 
 [(doi:10.1038/s41586-019-0933-9)](https://doi.org/10.1038/s41586-019-0933-9) method with the Scran R package
 
-Integration :
+-Integration :
 Using the method of integration of Seurat v4 https://satijalab.org/seurat/archive/v4.3/integration_mapping and then doing a dimensionality reduction following the same tutorial
 
-Visualisation :
+-Visualisation :
 The visualisation of data was based from the figure of this article https://www.cell.com/cell-stem-cell/fulltext/S1934-5909(23)00170-4?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS1934590923001704%3Fshowall%3Dtrue
 
 ## Usage
