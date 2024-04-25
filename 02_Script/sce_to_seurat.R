@@ -23,7 +23,6 @@ n         <- length(SODIR)
 sce <- readRDS(SODIR)
 
 ## give the adequate format for the normalisation
-#but no idea if it will cause cause an issue in next step?
 sce <- logNormCounts(sce) 
 
 #-------------------------------------

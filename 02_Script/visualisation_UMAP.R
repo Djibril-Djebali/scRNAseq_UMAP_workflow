@@ -47,7 +47,7 @@ plotUMAP <- function(x, title)
 {
   ggplot() +
   geom_point(data = data, #reference data
-             aes(x    = UMAP_1, 
+             aes(x    = UMAP_1,  # nolint
                  y    = UMAP_2,
                  color = "A",
                  )
